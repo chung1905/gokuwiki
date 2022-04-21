@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  gokuwiki:
+    image: chung1905/gokuwiki:0.0.1
+    volumes:
+      - ./data/:/srv/data
