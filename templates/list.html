@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Wiki</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.min.css">
 </head>
 <body>
+<div>
+    <ul>
+        {{ range $page := .pages }}
+        <li><a href="wiki{{ $page }}">{{ $page }}</a></li>
+        {{ end }}
+    </ul>
+</div>
 </body>
 </html>
