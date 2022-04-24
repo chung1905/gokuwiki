@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/parser"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -50,7 +51,11 @@ func viewWiki(c *gin.Context) {
 		return
 	}
 
-	output := markdown.ToHTML(wikiContent, nil, nil)
+	extensions := parser.CommonExtensions | parser.HardLineBreak | parser.FencedCode
+	parserModel := parser.NewWithExtensions(extensions)
+	output := markdown.ToHTML(wikiContent, parserModel, nil)
+
+	println(template.HTML(output))
 
 	c.HTML(http.StatusOK, "wiki.html", gin.H{
 		"title":       page,
@@ -58,11 +63,56 @@ func viewWiki(c *gin.Context) {
 	})
 }
 
+func editWiki(c *gin.Context) {
+	page := c.Param("page")
+	file := getDataDir() + page
+	wikiContent, err := os.ReadFile(file)
+
+	if err != nil {
+		fmt.Printf(err.Error())
+		c.String(http.StatusNotFound, "404 Not Found")
+		return
+	}
+
+	c.HTML(http.StatusOK, "edit.html", gin.H{
+		"title":       page,
+		"page":        page,
+		"wikiContent": string(wikiContent),
+	})
+}
+
+func saveWiki(c *gin.Context) {
+	page := c.PostForm("page")
+	wikiContent := c.PostForm("content")
+	filename := getDataDir() + page
+
+	file, err := os.Create(filename)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	_, err = file.WriteString(wikiContent)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	err = file.Sync()
+	if err != nil {
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, "wiki/"+page)
+}
+
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 	router.GET("/", homepage)
 	router.GET("/wiki/*page", viewWiki)
+	router.GET("/edit/*page", editWiki)
+	router.POST("/submitWiki", saveWiki)
 
 	err := router.Run()
 	if err != nil {

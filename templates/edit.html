@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit {{ .title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.min.css">
+</head>
+<body>
+<div>
+    <form action="/submitWiki" method="post">
+        <div>
+            <label>
+                <span>Page</span>
+                <input name="page" value="{{ .page }}">
+            </label>
+        </div>
+        <div>
+            <label>
+                <span>Content</span>
+                <textarea name="content">{{ .wikiContent }}</textarea>
+            </label>
+        </div>
+        <button>Save</button>
+    </form>
+</div>
+</body>
+</html>
