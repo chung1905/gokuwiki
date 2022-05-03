@@ -53,9 +53,8 @@ func viewWiki(c *gin.Context) {
 
 	extensions := parser.CommonExtensions | parser.HardLineBreak | parser.FencedCode
 	parserModel := parser.NewWithExtensions(extensions)
+	wikiContent = markdown.NormalizeNewlines(wikiContent)
 	output := markdown.ToHTML(wikiContent, parserModel, nil)
-
-	println(template.HTML(output))
 
 	c.HTML(http.StatusOK, "wiki.html", gin.H{
 		"title":       page,
