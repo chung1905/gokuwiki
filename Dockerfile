@@ -5,6 +5,7 @@ WORKDIR /srv
 
 COPY ./gokuwiki .
 COPY ./templates templates
+COPY ./pub pub
 
 EXPOSE 8080
 

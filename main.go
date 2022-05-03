@@ -153,6 +153,7 @@ func saveWiki(c *gin.Context) {
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
+	router.Static("/pub", "./pub") // use the loaded source
 	router.GET("/", homepage)
 	router.GET("/wiki/*page", viewWiki)
 	router.GET("/edit/*page", editWiki)
