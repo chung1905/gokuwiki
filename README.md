@@ -8,3 +8,6 @@
 
 ### Release
 - Run `make`
+
+### Changelogs
+- 0.1: view/edit wiki
