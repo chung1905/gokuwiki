@@ -9,16 +9,12 @@
 <div>
     <form action="/submitWiki" method="post">
         <div>
-            <label>
-                <span>Page</span>
-                <input name="page" value="{{ .page }}">
-            </label>
+            <label for="page">Page</label>
+            <input id="page" name="page" value="{{ .page }}">
         </div>
         <div>
-            <label>
-                <span>Content</span>
-                <textarea name="content">{{ .wikiContent }}</textarea>
-            </label>
+            <label for="content">Content</label>
+            <textarea id="content" name="content">{{ .wikiContent }}</textarea>
         </div>
         <button>Save</button>
     </form>

@@ -43,7 +43,7 @@ func homepage(c *gin.Context) {
 	})
 
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 
@@ -58,7 +58,7 @@ func viewWiki(c *gin.Context) {
 	wikiContent, err := os.ReadFile(file)
 
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Println(err.Error())
 		c.String(http.StatusNotFound, "404 Not Found")
 		return
 	}
@@ -77,13 +77,9 @@ func viewWiki(c *gin.Context) {
 func editWiki(c *gin.Context) {
 	page := c.Param("page")
 	file := getDataDir() + page
-	wikiContent, err := os.ReadFile(file)
+	wikiContent, _ := os.ReadFile(file)
 
-	if err != nil {
-		fmt.Printf(err.Error())
-		c.String(http.StatusNotFound, "404 Not Found")
-		return
-	}
+	//todo: check if file is allowed (.git,...)
 
 	c.HTML(http.StatusOK, "edit.html", gin.H{
 		"title":       page,
@@ -161,7 +157,7 @@ func main() {
 
 	err := router.Run()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 }
