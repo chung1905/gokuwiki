@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-git/go-git/v5"
@@ -15,8 +16,16 @@ import (
 	"time"
 )
 
-func getDataDir() string {
-	return "data/pages/"
+func getRepoDir() string {
+	return "data/repo/"
+}
+
+func getPageDirName() string {
+	return "pages"
+}
+
+func getPagesDir() string {
+	return getRepoDir() + getPageDirName() + "/"
 }
 
 func isAllow(path string, d fs.DirEntry) bool {
@@ -30,7 +39,7 @@ func isAllow(path string, d fs.DirEntry) bool {
 
 func homepage(c *gin.Context) {
 	var pages []string
-	dataDir := getDataDir()
+	dataDir := getPagesDir()
 	dataDirLen := len(dataDir)
 
 	err := filepath.WalkDir(dataDir, func(path string, d fs.DirEntry, err error) error {
@@ -54,7 +63,7 @@ func homepage(c *gin.Context) {
 
 func viewWiki(c *gin.Context) {
 	page := c.Param("page")
-	file := getDataDir() + page
+	file := getPagesDir() + page
 	wikiContent, err := os.ReadFile(file)
 
 	if err != nil {
@@ -76,10 +85,8 @@ func viewWiki(c *gin.Context) {
 
 func editWiki(c *gin.Context) {
 	page := c.Param("page")
-	file := getDataDir() + page
+	file := getPagesDir() + page
 	wikiContent, _ := os.ReadFile(file)
-
-	//todo: check if file is allowed (.git,...)
 
 	c.HTML(http.StatusOK, "edit.html", gin.H{
 		"title":       page,
@@ -92,7 +99,7 @@ func saveWiki(c *gin.Context) {
 	page := c.PostForm("page")
 	wikiContent := c.PostForm("content")
 	wikiContentBytes := markdown.NormalizeNewlines([]byte(wikiContent))
-	filename := getDataDir() + page
+	filename := getPagesDir() + page
 
 	file, err := os.Create(filename)
 	if err != nil {
@@ -112,7 +119,7 @@ func saveWiki(c *gin.Context) {
 		return
 	}
 
-	repo, err := git.PlainOpen(getDataDir())
+	repo, err := git.PlainOpen(getRepoDir())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -124,19 +131,13 @@ func saveWiki(c *gin.Context) {
 		return
 	}
 
-	_, err = worktree.Add(page[1:])
+	_, err = worktree.Add(getPageDirName() + page)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	_, err = worktree.Commit("Update "+page[1:], &git.CommitOptions{
-		Author: &object.Signature{
-			Name:  "gokuwiki web",
-			Email: "gokuwiki+web@chungn.com",
-			When:  time.Now(),
-		},
-	})
+	_, err = worktree.Commit("Update "+getPageDirName()+page, getGitCommitOptions())
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -146,7 +147,7 @@ func saveWiki(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "wiki/"+page)
 }
 
-func main() {
+func getRouter() *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/pub", "./pub") // use the loaded source
@@ -155,6 +156,52 @@ func main() {
 	router.GET("/edit/*page", editWiki)
 	router.POST("/submitWiki", saveWiki)
 
+	return router
+}
+
+func initRepoIfNotExist(repoDir string) *git.Repository {
+	repo, err := git.PlainOpenWithOptions(repoDir, &git.PlainOpenOptions{DetectDotGit: false})
+	if errors.Is(err, git.ErrRepositoryNotExists) {
+		repo, _ = git.PlainInit(repoDir, false)
+	}
+
+	return repo
+}
+
+func getGitCommitOptions() *git.CommitOptions {
+	return &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "gokuwiki web",
+			Email: "gokuwiki+web@chungn.com",
+			When:  time.Now(),
+		},
+	}
+}
+
+func commitOldData(repo *git.Repository) {
+	worktree, err := repo.Worktree()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	_, err = worktree.Add(".")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	_, err = worktree.Commit("Initial commit ", getGitCommitOptions())
+}
+
+func prepareGitRepo(repoDir string) {
+	repo := initRepoIfNotExist(repoDir)
+	commitOldData(repo)
+}
+
+func main() {
+	prepareGitRepo(getRepoDir())
+	router := getRouter()
 	err := router.Run()
 	if err != nil {
 		fmt.Println(err.Error())
