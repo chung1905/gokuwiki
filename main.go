@@ -99,30 +99,7 @@ func editWiki(c *gin.Context) {
 	})
 }
 
-func saveWiki(c *gin.Context) {
-	page := c.PostForm("page")
-	wikiContent := c.PostForm("content")
-	wikiContentBytes := markdown.NormalizeNewlines([]byte(wikiContent))
-	filename := getPagesDir() + page
-
-	file, err := os.Create(filename)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	_, err = file.Write(wikiContentBytes)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	err = file.Sync()
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
+func commitFile(page string) {
 	repo, err := git.PlainOpen(getRepoDir())
 	if err != nil {
 		fmt.Println(err.Error())
@@ -147,7 +124,49 @@ func saveWiki(c *gin.Context) {
 		fmt.Println(err.Error())
 		return
 	}
+}
 
+func deleteWiki(filename string) {
+	err := os.Remove(filename)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+}
+
+func saveWiki(c *gin.Context) {
+	page := c.PostForm("page")
+	wikiContent := c.PostForm("content")
+	wikiContentBytes := markdown.NormalizeNewlines([]byte(wikiContent))
+
+	filename := getPagesDir() + page
+
+	if len(wikiContentBytes) == 0 {
+		deleteWiki(filename)
+		commitFile(page)
+		c.Redirect(http.StatusSeeOther, "/")
+		return
+	}
+
+	file, err := os.Create(filename)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	_, err = file.Write(wikiContentBytes)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	err = file.Sync()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	commitFile(page)
 	c.Redirect(http.StatusSeeOther, "wiki/"+page)
 }
 
@@ -206,6 +225,7 @@ func prepareGitRepo(repoDir string) {
 func prepareDirectory(pagesDir string) {
 	err := os.MkdirAll(pagesDir, os.ModePerm)
 	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 }
