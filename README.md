@@ -10,4 +10,5 @@
 - Run `make`
 
 ### Changelogs
+- 0.2: commit to git after edit/delete
 - 0.1: view/edit wiki
