@@ -25,7 +25,7 @@ func getPageDirName() string {
 }
 
 func getPagesDir() string {
-	return getRepoDir() + getPageDirName() + "/"
+	return getRepoDir() + getPageDirName()
 }
 
 func isAllow(path string, d fs.DirEntry) bool {
@@ -43,6 +43,10 @@ func homepage(c *gin.Context) {
 	dataDirLen := len(dataDir)
 
 	err := filepath.WalkDir(dataDir, func(path string, d fs.DirEntry, err error) error {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil
+		}
+
 		if !isAllow(path[dataDirLen:], d) {
 			return nil
 		}
@@ -199,7 +203,15 @@ func prepareGitRepo(repoDir string) {
 	commitOldData(repo)
 }
 
+func prepareDirectory(pagesDir string) {
+	err := os.MkdirAll(pagesDir, os.ModePerm)
+	if err != nil {
+		return
+	}
+}
+
 func main() {
+	prepareDirectory(getPagesDir())
 	prepareGitRepo(getRepoDir())
 	router := getRouter()
 	err := router.Run()
