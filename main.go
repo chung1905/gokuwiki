@@ -51,7 +51,7 @@ func homepage(c *gin.Context) {
 			return nil
 		}
 
-		pages = append(pages, path[len(dataDir):])
+		pages = append(pages, path[len(dataDir)+1:])
 		return nil
 	})
 
@@ -119,7 +119,6 @@ func commitFile(page string) {
 	}
 
 	_, err = worktree.Commit("Update "+getPageDirName()+page, getGitCommitOptions())
-
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -143,7 +142,7 @@ func saveWiki(c *gin.Context) {
 
 	if len(wikiContentBytes) == 0 {
 		deleteWiki(filename)
-		commitFile(page)
+		go commitFile(page)
 		c.Redirect(http.StatusSeeOther, "/")
 		return
 	}
@@ -166,7 +165,7 @@ func saveWiki(c *gin.Context) {
 		return
 	}
 
-	commitFile(page)
+	go commitFile(page)
 	c.Redirect(http.StatusSeeOther, "wiki/"+page)
 }
 
