@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ .title }}</title>
-    <link rel="stylesheet" href="/pub/css/water.dark.min.css">
-</head>
+{{ template "head" .}}
 <body>
 {{template "header"}}
 <div>{{ .wikiContent }}</div>
+<div><a href="/edit{{ .page }}"><button>{{ .buttonText }}</button></a></div>
 </body>
 </html>

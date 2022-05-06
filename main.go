@@ -2,9 +2,11 @@ package main
 
 import (
 	"chungn/gokuwiki/internal"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	"io/fs"
 	"net/http"
 )
 
@@ -22,6 +24,7 @@ func getRouter() *gin.Engine {
 
 func homepage(c *gin.Context) {
 	c.HTML(http.StatusOK, "list.html", gin.H{
+		"title": "Wiki",
 		"pages": internal.ListFiles(getPagesDir()),
 	})
 }
@@ -30,18 +33,22 @@ func viewWiki(c *gin.Context) {
 	page := c.Param("page")
 	file := getPagesDir() + page
 	wikiContent, err := internal.ReadFile(file)
+	var buttonText string
 
-	if err != nil {
-		fmt.Println(err.Error())
-		c.String(http.StatusNotFound, "404 Not Found")
-		return
+	if errors.Is(err, fs.ErrNotExist) {
+		wikiContent = ([]byte)("Empty Page")
+		buttonText = "Create"
+	} else {
+		buttonText = "Edit"
 	}
 
 	output := internal.Md2html(wikiContent)
 
 	c.HTML(http.StatusOK, "wiki.html", gin.H{
+		"page":        page,
 		"title":       page,
 		"wikiContent": template.HTML(output),
+		"buttonText":  buttonText,
 	})
 }
 
@@ -59,6 +66,10 @@ func editWiki(c *gin.Context) {
 
 func saveWiki(c *gin.Context) {
 	page := c.PostForm("page")
+	if page[0:1] != "/" {
+		page = "/" + page
+	}
+
 	wikiContent := c.PostForm("content")
 	wikiContentBytes := internal.NormalizeNewlines([]byte(wikiContent))
 
