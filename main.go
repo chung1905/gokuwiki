@@ -66,13 +66,13 @@ func saveWiki(c *gin.Context) {
 
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(filepath)
-		go internal.CommitFile(page, getRepoDir())
+		go internal.CommitFile(getPageDirName()+page, getRepoDir())
 		c.Redirect(http.StatusSeeOther, "/")
 		return
 	}
 
 	internal.SaveFile(wikiContentBytes, filepath)
-	go internal.CommitFile(page, getRepoDir())
+	go internal.CommitFile(getPageDirName()+page, getRepoDir())
 
 	c.Redirect(http.StatusSeeOther, "wiki/"+page)
 }

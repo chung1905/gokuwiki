@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func CommitFile(filename string, repoDir string) {
+func CommitFile(filepath string, repoDir string) {
 	repo, err := git.PlainOpen(repoDir)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -21,13 +21,13 @@ func CommitFile(filename string, repoDir string) {
 		return
 	}
 
-	_, err = worktree.Add(getPageDirName() + filename)
+	_, err = worktree.Add(filepath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	_, err = worktree.Commit("Update "+getPageDirName()+filename, getGitCommitOptions())
+	_, err = worktree.Commit("Update "+filepath, getGitCommitOptions())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
