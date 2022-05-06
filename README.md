@@ -1,7 +1,7 @@
 ## Gokuwiki
 
 ### Get Started
-- Download `docker-compose.yml` then run `docker-compose up -d`
+- Download `build/docker-compose.yml` then run `docker-compose up -d`
 
 ### Development
 - Run `go build`
@@ -10,5 +10,6 @@
 - Run `make`
 
 ### Changelogs
+- 0.2.1: Add header
 - 0.2: commit to git after edit/delete
 - 0.1: view/edit wiki

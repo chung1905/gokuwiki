@@ -4,8 +4,7 @@ RUN mkdir -p /srv/data
 WORKDIR /srv
 
 COPY ./gokuwiki .
-COPY ./templates templates
-COPY ./pub pub
+COPY ./web web
 
 EXPOSE 8080
 

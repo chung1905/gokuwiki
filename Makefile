@@ -1,5 +1,7 @@
 include version
 
+.PHONY: build
+
 DOCKER_IMG_NAME := chung1905/gokuwiki
 DOCKER_IMG_TAG := $(DOCKER_IMG_NAME):${GOKUWIKI_VERSION}
 
@@ -12,7 +14,7 @@ build:
 	go build .
 
 docker_build:
-	docker build -t $(DOCKER_IMG_TAG) -t $(DOCKER_IMG_NAME):latest .
+	docker build -f build/Dockerfile -t $(DOCKER_IMG_TAG) -t $(DOCKER_IMG_NAME):latest .
 
 docker_push:
 	docker push $(DOCKER_IMG_TAG)
