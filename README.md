@@ -16,6 +16,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.2.3: Add commit message
 - 0.2.2-1: Add buttons
 - 0.2.1: Add header
 - 0.2: commit to git after edit/delete

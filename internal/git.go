@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func CommitFile(filepath string, repoDir string) {
+func CommitFile(filepath string, repoDir string, editComment string) {
 	repo, err := git.PlainOpen(repoDir)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -27,7 +27,7 @@ func CommitFile(filepath string, repoDir string) {
 		return
 	}
 
-	_, err = worktree.Commit("Update "+filepath, getGitCommitOptions())
+	_, err = worktree.Commit(filepath+": "+editComment, getGitCommitOptions())
 	if err != nil {
 		fmt.Println(err.Error())
 		return

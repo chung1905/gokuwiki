@@ -70,6 +70,12 @@ func saveWiki(c *gin.Context) {
 		page = "/" + page
 	}
 
+	editComment := c.PostForm("comment")
+	if len(editComment) == 0 {
+		c.Redirect(http.StatusSeeOther, "wiki/"+page)
+		return
+	}
+
 	wikiContent := c.PostForm("content")
 	wikiContentBytes := internal.NormalizeNewlines([]byte(wikiContent))
 
@@ -77,13 +83,13 @@ func saveWiki(c *gin.Context) {
 
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(filepath)
-		go internal.CommitFile(getPageDirName()+page, getRepoDir())
+		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment)
 		c.Redirect(http.StatusSeeOther, "/")
 		return
 	}
 
 	internal.SaveFile(wikiContentBytes, filepath)
-	go internal.CommitFile(getPageDirName()+page, getRepoDir())
+	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment)
 
 	c.Redirect(http.StatusSeeOther, "wiki/"+page)
 }
