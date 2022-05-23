@@ -3,6 +3,12 @@
 ### Get Started
 - Download `build/docker-compose.yml` then run `docker-compose up -d`
 
+### Todo
+- Message when saving (error/success)
+- Auto push commit
+- Image upload
+- Show history
+
 ### Development
 - Run `go build`
 
