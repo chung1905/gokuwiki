@@ -5,3 +5,6 @@ services:
     image: chung1905/gokuwiki:0.0.1
     volumes:
       - ./data/:/srv/data
+    environment:
+      GOKUWIKI_REPO_URL:
+      GOKUWIKI_ACCESS_TOKEN:

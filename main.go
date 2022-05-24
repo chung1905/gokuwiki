@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
+	"os"
 )
 
 func getRouter() *gin.Engine {
@@ -96,7 +97,7 @@ func saveWiki(c *gin.Context) {
 
 func main() {
 	internal.CreateDir(getPagesDir())
-	internal.PrepareGitRepo(getRepoDir())
+	internal.PrepareGitRepo(getRepoDir(), os.Getenv("GOKUWIKI_REPO_URL"))
 	router := getRouter()
 	err := router.Run()
 	if err != nil {

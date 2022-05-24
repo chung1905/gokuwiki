@@ -6,8 +6,13 @@
 ### Todo
 - Message when saving (error/success)
 - Auto push commit
+  - by ssh key
+  - (in case remote existed)
+  - custom branch
+  - ~~by access token~~ (done)
 - Image upload
 - Show history
+- Unit Test
 
 ### Development
 - Run `go build`
@@ -16,6 +21,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.3: Auto push to repo by access token
 - 0.2.3: Add commit message
 - 0.2.2-1: Add buttons
 - 0.2.1: Add header
