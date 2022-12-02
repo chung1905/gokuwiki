@@ -7,7 +7,6 @@ import (
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"os"
 	"time"
 )
 
@@ -19,7 +18,7 @@ func PrepareGitRepo(repoDir string, remoteUrl string) {
 	}
 }
 
-func CommitFile(filepath string, repoDir string, editComment string) {
+func CommitFile(filepath string, repoDir string, editComment string, accessToken string) {
 	repo, err := git.PlainOpen(repoDir)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -44,7 +43,6 @@ func CommitFile(filepath string, repoDir string, editComment string) {
 		return
 	}
 
-	accessToken := os.Getenv("GOKUWIKI_ACCESS_TOKEN")
 	if len(accessToken) > 0 {
 		push(repo, accessToken)
 	}

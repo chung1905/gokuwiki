@@ -2,13 +2,13 @@ package main
 
 import (
 	"chungn/gokuwiki/internal"
+	"chungn/gokuwiki/internal/captcha"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"io/fs"
 	"net/http"
-	"os"
 )
 
 func getRouter() *gin.Engine {
@@ -59,13 +59,22 @@ func editWiki(c *gin.Context) {
 	wikiContent, _ := internal.ReadFile(file)
 
 	c.HTML(http.StatusOK, "edit.html", gin.H{
-		"title":       page,
-		"page":        page,
-		"wikiContent": string(wikiContent),
+		"title":            page,
+		"page":             page,
+		"wikiContent":      string(wikiContent),
+		"turnstileEnabled": getTurnstileEnabled(),
+		"turnstileSiteKey": getTurnstileSiteKey(),
 	})
 }
 
 func saveWiki(c *gin.Context) {
+	if getTurnstileEnabled() {
+		captchaResult := captcha.Validate(c.PostForm("cf-turnstile-response"), getTurnstileSecretKey())
+		if !captchaResult {
+			return
+		}
+	}
+
 	page := c.PostForm("page")
 	if page[0:1] != "/" {
 		page = "/" + page
@@ -84,20 +93,20 @@ func saveWiki(c *gin.Context) {
 
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(filepath)
-		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment)
+		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
 		c.Redirect(http.StatusSeeOther, "/")
 		return
 	}
 
 	internal.SaveFile(wikiContentBytes, filepath)
-	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment)
+	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
 
 	c.Redirect(http.StatusSeeOther, "wiki/"+page)
 }
 
 func main() {
 	internal.CreateDir(getPagesDir())
-	internal.PrepareGitRepo(getRepoDir(), os.Getenv("GOKUWIKI_REPO_URL"))
+	internal.PrepareGitRepo(getRepoDir(), getRepoURL())
 	router := getRouter()
 	err := router.Run()
 	if err != nil {
