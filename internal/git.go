@@ -54,7 +54,6 @@ func push(repo *git.Repository, accessToken string) {
 			Username: "gokuwiki",
 			Password: accessToken,
 		},
-		InsecureSkipTLS: true,
 	})
 	if err != nil {
 		fmt.Println(err.Error())
