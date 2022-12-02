@@ -14,6 +14,7 @@
 - Image upload
 - Show history
 - Unit Test
+- Create config object to store configuration, currently reading config value from os env everytime
 
 ### Development
 - Run `go build`
@@ -22,7 +23,9 @@
 - Run `make`
 
 ### Changelogs
-- 0.3.1: InsecureSkipTLS: true
+- 0.4.2: Remove `InsecureSkipTLS: true`
+- 0.4.0: Add Cloudflare Turnstile captcha
+- 0.3.1: `InsecureSkipTLS: true`
 - 0.3: Auto push to repo by access token
 - 0.2.3: Add commit message
 - 0.2.2-1: Add buttons
