@@ -23,6 +23,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.4.3: Fix bug can't create wiki in directory
 - 0.4.2: Remove `InsecureSkipTLS: true`
 - 0.4.0: Add Cloudflare Turnstile captcha
 - 0.3.1: `InsecureSkipTLS: true`

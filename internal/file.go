@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -55,6 +56,7 @@ func ListFiles(dir string) []string {
 }
 
 func SaveFile(content []byte, filepath string) {
+	CreateDir(path.Dir(filepath))
 	file, err := os.Create(filepath)
 	if err != nil {
 		fmt.Println(err.Error())
