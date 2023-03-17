@@ -1,11 +1,11 @@
 ## Gokuwiki
 
 ### Get Started
-- Download `build/docker-compose.yml` then run `docker-compose up -d`
+- Download `build/docker-compose.yml` then run `docker compose up -d`
 
 ### Todo
 - Message when saving (error/success)
-- Auto push commit
+- Auto push commit (partial done)
   - by ssh key
   - (in case remote existed)
   - custom branch
@@ -14,6 +14,7 @@
 - Image upload
 - Show history
 - Unit Test
+- Allow omit comment
 - Create config object to store configuration, currently reading config value from os env everytime
 
 ### Development
