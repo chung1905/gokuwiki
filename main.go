@@ -5,16 +5,18 @@ import (
 	"chungn/gokuwiki/internal/captcha"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"html/template"
 	"io/fs"
 	"net/http"
+
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func getRouter() *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLGlob("web/templates/*/*.html")
-	router.Static("/pub", "./web/pub")
+	router.Use(static.Serve("/", static.LocalFile("./web/pub", false)))
 	router.GET("/", homepage)
 	router.GET("/wiki/*page", viewWiki)
 	router.GET("/edit/*page", editWiki)
