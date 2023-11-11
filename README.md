@@ -4,7 +4,7 @@
 - Download `build/docker-compose.yml` then run `docker compose up -d`
 
 ### Todo
-- Message when saving (error/success)
+- ~Message when saving (error/success)~
 - Auto push commit (partial done)
   - by ssh key
   - (in case remote existed)
@@ -24,6 +24,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.6.0: Success/failed message
 - 0.5.2: Upgrade dependencies
 - 0.5.1: Doesn't create empty commit while start
 - 0.5.0: Add `robots.txt`

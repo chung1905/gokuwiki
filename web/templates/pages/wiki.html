@@ -4,7 +4,7 @@
     {{ template "head" .}}
 </head>
 <body>
-{{template "header"}}
+{{template "header" .}}
 <div>{{ .wikiContent }}</div>
 <div><a href="/edit{{ .page }}"><button>{{ .buttonText }}</button></a></div>
 </body>

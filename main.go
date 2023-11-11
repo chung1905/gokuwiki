@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
+	"net/url"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -27,8 +28,9 @@ func getRouter() *gin.Engine {
 
 func homepage(c *gin.Context) {
 	c.HTML(http.StatusOK, "list.html", gin.H{
-		"title": "Wiki",
-		"pages": internal.ListFiles(getPagesDir()),
+		"title":   "Wiki",
+		"pages":   internal.ListFiles(getPagesDir()),
+		"message": internal.GetMessage(c.Query("m")),
 	})
 }
 
@@ -52,6 +54,7 @@ func viewWiki(c *gin.Context) {
 		"title":       page,
 		"wikiContent": template.HTML(output),
 		"buttonText":  buttonText,
+		"message":     internal.GetMessage(c.Query("m")),
 	})
 }
 
@@ -77,6 +80,7 @@ func saveWiki(c *gin.Context) {
 		}
 	}
 
+	q := url.Values{}
 	page := c.PostForm("page")
 	if page[0:1] != "/" {
 		page = "/" + page
@@ -84,7 +88,8 @@ func saveWiki(c *gin.Context) {
 
 	editComment := c.PostForm("comment")
 	if len(editComment) == 0 {
-		c.Redirect(http.StatusSeeOther, "wiki/"+page)
+		q.Add("m", "mc")
+		c.Redirect(http.StatusSeeOther, "wiki/"+page+"?"+q.Encode())
 		return
 	}
 
@@ -96,14 +101,16 @@ func saveWiki(c *gin.Context) {
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(filepath)
 		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
-		c.Redirect(http.StatusSeeOther, "/")
+		q.Add("m", "wd")
+		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
 		return
 	}
 
 	internal.SaveFile(wikiContentBytes, filepath)
 	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
 
-	c.Redirect(http.StatusSeeOther, "wiki/"+page)
+	q.Add("m", "ws")
+	c.Redirect(http.StatusSeeOther, "wiki/"+page+"?"+q.Encode())
 }
 
 func main() {
