@@ -13,8 +13,9 @@ clean:
 build:
 	go build .
 
-docker_build:
-	docker build -f build/Dockerfile -t $(DOCKER_IMG_TAG) -t $(DOCKER_IMG_NAME):latest .
+docker_build: 
+	env GOOS=linux GOARCH=amd64 go build .
+	DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -f build/Dockerfile -t $(DOCKER_IMG_TAG) -t $(DOCKER_IMG_NAME):latest .
 
 docker_push:
 	docker push $(DOCKER_IMG_TAG)

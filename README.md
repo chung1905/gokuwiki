@@ -24,6 +24,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.5.2: Upgrade dependencies
 - 0.5.1: Doesn't create empty commit while start
 - 0.5.0: Add `robots.txt`
 - 0.4.3: Fix bug can't create wiki in directory
