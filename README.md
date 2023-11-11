@@ -10,7 +10,7 @@
   - (in case remote existed)
   - custom branch
   - ~~by access token~~ (done)
-  - [fix CA in docker image](https://stackoverflow.com/questions/64462922/docker-multi-stage-build-go-image-x509-certificate-signed-by-unknown-authorit)
+  - ~[fix CA in docker image](https://stackoverflow.com/questions/64462922/docker-multi-stage-build-go-image-x509-certificate-signed-by-unknown-authorit)~
 - Image upload
 - Show history
 - Unit Test
@@ -24,6 +24,8 @@
 - Run `make`
 
 ### Changelogs
+- 0.5.1: Doesn't create empty commit while start
+- 0.5.0: Add `robots.txt`
 - 0.4.3: Fix bug can't create wiki in directory
 - 0.4.2: Remove `InsecureSkipTLS: true`
 - 0.4.0: Add Cloudflare Turnstile captcha

@@ -3,11 +3,12 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"time"
 )
 
 func PrepareGitRepo(repoDir string, remoteUrl string) {
@@ -88,13 +89,18 @@ func commitOldData(repo *git.Repository) {
 		return
 	}
 
+	status, _ := worktree.Status()
+	if status.IsClean() {
+		return
+	}
+
 	_, err = worktree.Add(".")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	_, err = worktree.Commit("Initial commit ", getGitCommitOptions())
+	_, _ = worktree.Commit("Commit unstaged files", getGitCommitOptions())
 }
 
 func addRemote(repo *git.Repository, url string) {
