@@ -6,9 +6,10 @@ type Message struct {
 }
 
 var messages = map[string]Message{
-	"ws": {true, "a wiki page saved successfully"},   // Wiki Saved
-	"wd": {true, "a wiki page removed successfully"}, // Wiki deleted
-	"mc": {false, "comment can't be empty"},          // Missing Comment
+	"wiki-saved":      {true, "a wiki page saved successfully"},
+	"wiki-removed":    {true, "a wiki page removed successfully"},
+	"missing-comment": {false, "comment can't be empty"},
+	"missing-path":    {false, "path can't be empty"},
 }
 
 func GetMessage(code string) Message {

@@ -18,7 +18,6 @@
 - Create config object to store configuration, currently reading config value from os env everytime
 - Re-style darkmode
 - fix bug saving while saving `/` path still success
-- `noindex` in `/edit/` pages
 - add `sitemap.xml`
 
 ### Development
@@ -28,6 +27,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.6.2: `noindex` in `/edit/` pages
 - 0.6.1: change from dark mode to light mode, add markdown editor
 - 0.6.0: Success/failed message
 - 0.5.2: Upgrade dependencies

@@ -55,25 +55,27 @@ func ListFiles(dir string) []string {
 	return pages
 }
 
-func SaveFile(content []byte, filepath string) {
+func SaveFile(content []byte, filepath string) error {
 	CreateDir(path.Dir(filepath))
 	file, err := os.Create(filepath)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return err
 	}
 
 	_, err = file.Write(content)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return err
 	}
 
 	err = file.Sync()
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return err
 	}
+
+	return nil
 }
 
 func isAllow(path string, d fs.DirEntry) bool {

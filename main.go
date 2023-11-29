@@ -63,6 +63,7 @@ func editWiki(c *gin.Context) {
 	file := getPagesDir() + page
 	wikiContent, _ := internal.ReadFile(file)
 
+	c.Header("X-Robots-Tag", "noindex")
 	c.HTML(http.StatusOK, "edit.html", gin.H{
 		"title":            page,
 		"page":             page,
@@ -88,7 +89,7 @@ func saveWiki(c *gin.Context) {
 
 	editComment := c.PostForm("comment")
 	if len(editComment) == 0 {
-		q.Add("m", "mc")
+		q.Add("m", "missing-comment")
 		c.Redirect(http.StatusSeeOther, "wiki/"+page+"?"+q.Encode())
 		return
 	}
@@ -101,15 +102,21 @@ func saveWiki(c *gin.Context) {
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(filepath)
 		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
-		q.Add("m", "wd")
+		q.Add("m", "wiki-removed")
 		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
 		return
 	}
 
-	internal.SaveFile(wikiContentBytes, filepath)
+	err := internal.SaveFile(wikiContentBytes, filepath)
+	if err != nil {
+		q.Add("m", "missing-path")
+		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
+		return
+	}
+
 	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
 
-	q.Add("m", "ws")
+	q.Add("m", "wiki-saved")
 	c.Redirect(http.StatusSeeOther, "wiki/"+page+"?"+q.Encode())
 }
 
