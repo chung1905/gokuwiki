@@ -18,6 +18,8 @@
 - Create config object to store configuration, currently reading config value from os env everytime
 - Re-style darkmode
 - fix bug saving while saving `/` path still success
+- `noindex` in `/edit/` pages
+- add `sitemap.xml`
 
 ### Development
 - Run `go build`
