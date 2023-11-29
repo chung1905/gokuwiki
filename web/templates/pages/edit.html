@@ -5,6 +5,8 @@
     {{ if .turnstileEnabled }}
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     {{ end }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js" async defer></script>
 </head>
 <body>
 {{ template "header" .}}
@@ -28,5 +30,10 @@
         <button>Save</button>
     </form>
 </div>
+<script>
+    window.addEventListener('load', function () {
+        const easyMDE = new EasyMDE({element: document.getElementById('content')});
+    })
+</script>
 </body>
 </html>

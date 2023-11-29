@@ -16,6 +16,8 @@
 - Unit Test
 - Allow omit comment
 - Create config object to store configuration, currently reading config value from os env everytime
+- Re-style darkmode
+- fix bug saving while saving `/` path still success
 
 ### Development
 - Run `go build`
@@ -24,6 +26,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.6.1: change from dark mode to light mode, add markdown editor
 - 0.6.0: Success/failed message
 - 0.5.2: Upgrade dependencies
 - 0.5.1: Doesn't create empty commit while start
