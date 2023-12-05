@@ -87,6 +87,11 @@ func saveWiki(c *gin.Context) {
 		page = "/" + page
 	}
 
+	if page == "/" {
+		q.Add("m", "missing-path")
+		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
+	}
+
 	editComment := c.PostForm("comment")
 	if len(editComment) == 0 {
 		q.Add("m", "missing-comment")
@@ -109,7 +114,7 @@ func saveWiki(c *gin.Context) {
 
 	err := internal.SaveFile(wikiContentBytes, filepath)
 	if err != nil {
-		q.Add("m", "missing-path")
+		q.Add("m", "save-error")
 		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
 		return
 	}

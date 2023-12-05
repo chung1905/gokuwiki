@@ -10,6 +10,7 @@ var messages = map[string]Message{
 	"wiki-removed":    {true, "a wiki page removed successfully"},
 	"missing-comment": {false, "comment can't be empty"},
 	"missing-path":    {false, "path can't be empty"},
+	"save-error":      {false, "unexpected error while saving"},
 }
 
 func GetMessage(code string) Message {
