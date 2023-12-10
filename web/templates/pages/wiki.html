@@ -5,8 +5,8 @@
 </head>
 <body>
 {{template "header" .}}
-<div></div>
-<div>{{ .wikiContent }}</div>
+<div class="main-content">{{ .wikiContent }}</div>
+<div class="last-modifed-time"><pre>Last modified at {{ .lastModifiedTime }}</pre></div>
 <div><a href="/edit{{ .page }}"><button>{{ .buttonText }}</button></a></div>
 </body>
 </html>

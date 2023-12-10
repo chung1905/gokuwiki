@@ -9,6 +9,8 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
+	"os"
+	"time"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -39,22 +41,26 @@ func viewWiki(c *gin.Context) {
 	file := getPagesDir() + page
 	wikiContent, err := internal.ReadFile(file)
 	var buttonText string
+	var lastModifiedTime string
 
 	if errors.Is(err, fs.ErrNotExist) {
 		wikiContent = ([]byte)("Empty Page")
 		buttonText = "Create"
 	} else {
 		buttonText = "Edit"
+		fileStat, _ := os.Stat(file)
+		lastModifiedTime = fileStat.ModTime().Format(time.UnixDate)
 	}
 
 	output := internal.Md2html(wikiContent)
 
 	c.HTML(http.StatusOK, "wiki.html", gin.H{
-		"page":        page,
-		"title":       page,
-		"wikiContent": template.HTML(output),
-		"buttonText":  buttonText,
-		"message":     internal.GetMessage(c.Query("m")),
+		"page":             page,
+		"title":            page,
+		"wikiContent":      template.HTML(output),
+		"buttonText":       buttonText,
+		"message":          internal.GetMessage(c.Query("m")),
+		"lastModifiedTime": lastModifiedTime,
 	})
 }
 
