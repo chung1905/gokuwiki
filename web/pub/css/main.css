@@ -9,3 +9,7 @@ div.main-content {
     padding: 1.556em 2em 2em;
     margin-bottom: .5em;
 }
+
+.message-holder.hide {
+    display: none;
+}

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
+	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
@@ -18,7 +18,7 @@ import (
 
 func getRouter() *gin.Engine {
 	router := gin.Default()
-	router.LoadHTMLGlob("web/templates/*/*.html")
+	router.LoadHTMLGlob("web/templates/*/*.gohtml")
 	router.Use(static.Serve("/", static.LocalFile("./web/pub", false)))
 	router.GET("/", homepage)
 	router.GET("/wiki/*page", viewWiki)
@@ -29,10 +29,10 @@ func getRouter() *gin.Engine {
 }
 
 func homepage(c *gin.Context) {
-	c.HTML(http.StatusOK, "list.html", gin.H{
-		"title":   "Wiki",
-		"pages":   internal.ListFiles(getPagesDir()),
-		"message": internal.GetMessage(c.Query("m")),
+	c.HTML(http.StatusOK, "list.gohtml", gin.H{
+		"title":  "Wiki",
+		"pages":  internal.ListFiles(getPagesDir()),
+		"result": internal.GetMessage(c.Query("m")),
 	})
 }
 
@@ -54,12 +54,12 @@ func viewWiki(c *gin.Context) {
 
 	output := internal.Md2html(wikiContent)
 
-	c.HTML(http.StatusOK, "wiki.html", gin.H{
+	c.HTML(http.StatusOK, "wiki.gohtml", gin.H{
 		"page":             page,
 		"title":            page,
 		"wikiContent":      template.HTML(output),
 		"buttonText":       buttonText,
-		"message":          internal.GetMessage(c.Query("m")),
+		"result":           internal.GetMessage(c.Query("m")),
 		"lastModifiedTime": lastModifiedTime,
 	})
 }
@@ -70,7 +70,7 @@ func editWiki(c *gin.Context) {
 	wikiContent, _ := internal.ReadFile(file)
 
 	c.Header("X-Robots-Tag", "noindex")
-	c.HTML(http.StatusOK, "edit.html", gin.H{
+	c.HTML(http.StatusOK, "edit.gohtml", gin.H{
 		"title":            page,
 		"page":             page,
 		"wikiContent":      string(wikiContent),
@@ -80,32 +80,44 @@ func editWiki(c *gin.Context) {
 }
 
 func saveWiki(c *gin.Context) {
+	var requestJson struct {
+		Page    string `json:"page"`
+		Content string `json:"content"`
+		Comment string `json:"comment"`
+		Captcha string `json:"captcha"`
+	}
+
+	e := c.Bind(&requestJson)
+	if e != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"result": e.Error()})
+		log.Fatal(e)
+		return
+	}
+
 	if getTurnstileEnabled() {
-		captchaResult := captcha.Validate(c.PostForm("cf-turnstile-response"), getTurnstileSecretKey())
+		captchaResult := captcha.Validate(requestJson.Captcha, getTurnstileSecretKey())
 		if !captchaResult {
 			return
 		}
 	}
 
-	q := url.Values{}
-	page := c.PostForm("page")
+	page := requestJson.Page
 	if page[0:1] != "/" {
 		page = "/" + page
 	}
 
 	if page == "/" {
-		q.Add("m", "missing-path")
-		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
-	}
-
-	editComment := c.PostForm("comment")
-	if len(editComment) == 0 {
-		q.Add("m", "missing-comment")
-		c.Redirect(http.StatusSeeOther, "wiki/"+page+"?"+q.Encode())
+		c.JSON(http.StatusBadRequest, gin.H{"result": internal.GetMessage("missing-path")})
 		return
 	}
 
-	wikiContent := c.PostForm("content")
+	editComment := requestJson.Comment
+	if len(editComment) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"result": internal.GetMessage("missing-comment")})
+		return
+	}
+
+	wikiContent := requestJson.Content
 	wikiContentBytes := internal.NormalizeNewlines([]byte(wikiContent))
 
 	filepath := getPagesDir() + page
@@ -113,22 +125,19 @@ func saveWiki(c *gin.Context) {
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(filepath)
 		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
-		q.Add("m", "wiki-removed")
-		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
+		c.JSON(http.StatusOK, gin.H{"result": internal.GetMessage("wiki-removed")})
 		return
 	}
 
 	err := internal.SaveFile(wikiContentBytes, filepath)
 	if err != nil {
-		q.Add("m", "save-error")
-		c.Redirect(http.StatusSeeOther, "/"+"?"+q.Encode())
+		c.JSON(http.StatusBadRequest, gin.H{"result": internal.GetMessage("save-error")})
 		return
 	}
 
 	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
 
-	q.Add("m", "wiki-saved")
-	c.Redirect(http.StatusSeeOther, "wiki/"+page+"?"+q.Encode())
+	c.JSON(http.StatusOK, gin.H{"result": internal.GetMessage("wiki-saved")})
 }
 
 func main() {

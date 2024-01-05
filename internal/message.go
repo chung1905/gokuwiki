@@ -1,8 +1,8 @@
 package internal
 
 type Message struct {
-	IsSuccess bool
-	Content   string
+	IsSuccess bool   `json:"is_success"`
+	Message   string `json:"message"`
 }
 
 var messages = map[string]Message{

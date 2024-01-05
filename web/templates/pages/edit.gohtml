@@ -3,15 +3,16 @@
 <head>
     {{ template "head" .}}
     {{ if .turnstileEnabled }}
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     {{ end }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js" async defer></script>
+    <script src="/js/edit.js" async defer></script>
 </head>
 <body>
 {{ template "header" .}}
 <div>
-    <form action="/submitWiki" method="post">
+    <form action="javascript:void(0);" method="post">
         <div>
             <label for="page">Page</label>
             <input id="page" name="page" value="{{ .page }}">
@@ -25,15 +26,20 @@
             <input id="comment" name="comment">
         </div>
         {{ if .turnstileEnabled }}
-        <div class="cf-turnstile" data-sitekey="{{ .turnstileSiteKey }}"></div>
+            <div class="cf-turnstile"></div>
         {{ end }}
-        <button>Save</button>
+        <button type="submit">Save</button>
     </form>
 </div>
 <script>
     window.addEventListener('load', function () {
-        const easyMDE = new EasyMDE({element: document.getElementById('content')});
-    })
-</script>
+        initializeEditor('#content')
+        initializeForm('form', '/submitWiki')
+        {{ if .turnstileEnabled }}
+        turnstile.render('.cf-turnstile', {
+            sitekey: '{{ .turnstileSiteKey }}',
+        });
+        {{ end }}
+    })</script>
 </body>
 </html>

@@ -27,6 +27,7 @@
 - Run `make`
 
 ### Changelogs
+- 0.7: save via `fetch` without reload form
 - 0.6.2: `noindex` in `/edit/` pages
 - 0.6.1: change from dark mode to light mode, add markdown editor
 - 0.6.0: Success/failed message
