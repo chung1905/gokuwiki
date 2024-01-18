@@ -1,3 +1,5 @@
+turnstile = window.turnstile
+
 function initializeEditor(editorQuery) {
     new EasyMDE({
         element: document.querySelector(editorQuery),
@@ -6,9 +8,18 @@ function initializeEditor(editorQuery) {
 }
 
 function addMessage(content, timeout) {
-    const messageHolder = document.querySelector(".message-holder")
-    messageHolder.innerHTML = "<span>" + content + "</span>"
-    messageHolder.classList.remove('hide')
+    const messagePopupTmpl = document.querySelector('.message-popup-template')
+    const messagePopup = messagePopupTmpl.cloneNode(true)
+    console.log(messagePopup)
+    messagePopup.classList.remove('message-popup-template')
+    messagePopup.querySelector('.message-holder').innerHTML = "<span>" + content + "</span>"
+    messagePopup.classList.remove('hide')
+    messagePopupTmpl.parentNode.appendChild(messagePopup)
+    if (timeout) {
+        setTimeout(function () {
+            messagePopup.classList.add('hide')
+        }, timeout)
+    }
 }
 
 function initializeForm(formQuery, submitUrl) {
@@ -43,7 +54,4 @@ function initializeForm(formQuery, submitUrl) {
             turnstile.reset()
         }
     })
-}
-
-function initializeTurnstile(renderContainer, turnstileSiteKey) {
 }

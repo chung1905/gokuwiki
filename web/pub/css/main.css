@@ -10,6 +10,18 @@ div.main-content {
     margin-bottom: .5em;
 }
 
-.message-holder.hide {
+.hide {
     display: none;
+}
+
+.message-popup {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    z-index: 1000;
+    padding: 0 1em;
+    border: 1px solid #eee;
+    box-shadow: 0 0 .5em #999;
+    border-radius: 1em;
+    background-color: #fff;
 }
