@@ -1,4 +1,3 @@
-turnstile = window.turnstile
 
 function initializeEditor(editorQuery) {
     new EasyMDE({
@@ -31,8 +30,8 @@ function initializeForm(formQuery, submitUrl) {
             "content": form.querySelector('textarea[name="content"]').value,
             "comment": form.querySelector('input[name="comment"]').value,
         }
-        if (turnstile) {
-            ret.captcha = turnstile.getResponse()
+        if (window.turnstile) {
+            ret.captcha = window.turnstile.getResponse()
         }
         return ret
     }
@@ -50,8 +49,8 @@ function initializeForm(formQuery, submitUrl) {
 
         const json = await response.json()
         addMessage(json.result.message)
-        if (turnstile) {
-            turnstile.reset()
+        if (window.turnstile) {
+            window.turnstile.reset()
         }
     })
 }

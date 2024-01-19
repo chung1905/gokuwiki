@@ -2,9 +2,6 @@
 <html lang="en">
 <head>
     {{ template "head" .}}
-    {{ if .turnstileEnabled }}
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    {{ end }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js" async defer></script>
     <script src="/js/edit.js" async defer></script>
@@ -32,14 +29,23 @@
     </form>
 </div>
 <script>
+    {{ if .turnstileEnabled }}
+    function initializeTurnstile() {
+        window.turnstile.render('.cf-turnstile', {
+            sitekey: '{{ .turnstileSiteKey }}',
+        });
+    }
+    {{ end }}
+
     window.addEventListener('load', function () {
         initializeEditor('#content')
         initializeForm('form', '/submitWiki')
-        {{ if .turnstileEnabled }}
-        turnstile.render('.cf-turnstile', {
-            sitekey: '{{ .turnstileSiteKey }}',
-        });
-        {{ end }}
-    })</script>
+    })
+</script>
+
+{{ if .turnstileEnabled }}
+    <script onload="initializeTurnstile()"
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+{{ end }}
 </body>
 </html>
