@@ -12,15 +12,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
 func getRouter() *gin.Engine {
 	router := gin.Default()
-	router.LoadHTMLGlob("web/templates/*/*.gohtml")
-	router.Use(static.Serve("/", static.LocalFile("./web/pub", false)))
 	router.GET("/", homepage)
+	router.GET("/api/wiki/list", internal.ListWiki)
+	router.GET("/api/wiki/view/*page", internal.ListWiki)
 	router.GET("/wiki/*page", viewWiki)
 	router.GET("/edit/*page", editWiki)
 	router.POST("/submitWiki", saveWiki)

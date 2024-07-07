@@ -3,7 +3,6 @@ module chungn/gokuwiki
 go 1.18
 
 require (
-	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-git/go-git/v5 v5.10.0
 	github.com/gomarkdown/markdown v0.0.0-20230922112808-5421fefb8386

@@ -2,10 +2,14 @@ services:
   web:
     build: frontend
     ports:
-    - 8080:8080
+      - 8080:8080
     volumes:
-    - ./frontend:/app
+      - ./frontend:/app
   api:
     build: backend
+    ports:
+      - 8081:8080
     volumes:
-    - ./data:/app/data
+      - ./go-cache:/root/.cache/go-build
+      - ./backend:/app
+      - ./data:/data
