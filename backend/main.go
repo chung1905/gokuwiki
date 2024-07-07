@@ -49,7 +49,7 @@ func viewWiki(c *gin.Context) {
 	} else {
 		buttonText = "Edit"
 		fileStat, _ := os.Stat(file)
-		lastModifiedTime = fileStat.ModTime().Format(time.UnixDate)
+		lastModifiedTime = fileStat.ModTime().Format(time.RFC1123)
 	}
 
 	output := internal.Md2html(wikiContent)

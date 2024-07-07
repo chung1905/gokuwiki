@@ -4,6 +4,7 @@
 - Download `build/docker-compose.yml` then run `docker compose up -d`
 
 ### Todo
+- Rework the interface PLS
 - ~~Message when saving (error/success)~~
 - Auto push commit (partial done)
   - by ssh key
