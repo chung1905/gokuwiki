@@ -5,7 +5,7 @@ import (
 )
 
 func getRepoDir() string {
-	return "data/repo/"
+	return "/data/repo/"
 }
 
 func getPageDirName() string {
