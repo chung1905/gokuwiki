@@ -17,13 +17,10 @@ onMounted(fetchData);
 </script>
 
 <template>
-  <div>
-    <h1>Home Page</h1>
-    <ul>
-      <li v-for="(value, key) in items" :key="key">
-        <RouterLink :to="`/wiki/${value}`">{{ value }}</RouterLink>
-      </li>
-    </ul>
+  <div class="flex flex-col">
+    <RouterLink :to="`/wiki/${value}`" v-for="(value, key) in items" :key="key"
+                class="border-solid border border-gray-500 p-2 rounded-lg m-1">{{ value }}
+    </RouterLink>
   </div>
 </template>
 
