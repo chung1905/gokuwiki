@@ -9,7 +9,6 @@ function initializeEditor(editorQuery) {
 function addMessage(content, timeout) {
     const messagePopupTmpl = document.querySelector('.message-popup-template')
     const messagePopup = messagePopupTmpl.cloneNode(true)
-    console.log(messagePopup)
     messagePopup.classList.remove('message-popup-template')
     messagePopup.querySelector('.message-holder').innerHTML = "<span>" + content + "</span>"
     messagePopup.classList.remove('hide')
