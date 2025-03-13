@@ -9,12 +9,13 @@ import (
 	"path/filepath"
 )
 
-func CreateDir(dir string) {
+func CreateDir(dir string) error {
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return err
 	}
+	return nil
 }
 
 func DeleteFile(filepath string) {
@@ -43,7 +44,7 @@ func ListFiles(dir string) []string {
 			return nil
 		}
 
-		pages = append(pages, path[len(dir)+1:])
+		pages = append(pages, path[len(dir):])
 		return nil
 	})
 
@@ -56,7 +57,7 @@ func ListFiles(dir string) []string {
 }
 
 func SaveFile(content []byte, filepath string) error {
-	CreateDir(path.Dir(filepath))
+	_ = CreateDir(path.Dir(filepath))
 	file, err := os.Create(filepath)
 	if err != nil {
 		fmt.Println(err.Error())

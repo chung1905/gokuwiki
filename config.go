@@ -9,7 +9,7 @@ func getRepoDir() string {
 }
 
 func getPageDirName() string {
-	return "pages"
+	return "pages/"
 }
 
 func getPagesDir() string {
