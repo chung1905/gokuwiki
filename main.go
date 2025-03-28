@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"chungn/gokuwiki/internal"
 	"chungn/gokuwiki/internal/captcha"
-	"errors"
 	"fmt"
 	"html/template"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -22,49 +20,11 @@ import (
 func getRouter() *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLGlob("web/templates/*/*.gohtml")
-	router.Use(static.Serve("/", static.LocalFile("./web/pub", false)))
-	router.GET("/", homepage)
-	router.GET("/wiki/*page", viewWiki)
+	router.Use(static.Serve("/", static.LocalFile(getOutputDir(), false)))
 	router.GET("/edit/*page", editWiki)
 	router.POST("/submitWiki", saveWiki)
 
 	return router
-}
-
-func homepage(c *gin.Context) {
-	c.HTML(http.StatusOK, "list.gohtml", gin.H{
-		"title":  "Wiki",
-		"pages":  internal.ListFiles(getPagesDir()),
-		"result": internal.GetMessage(c.Query("m")),
-	})
-}
-
-func viewWiki(c *gin.Context) {
-	page := c.Param("page")
-	file := getPagesDir() + page
-	wikiContent, err := internal.ReadFile(file)
-	var buttonText string
-	var lastModifiedTime string
-
-	if errors.Is(err, fs.ErrNotExist) {
-		wikiContent = ([]byte)("Empty Page")
-		buttonText = "Create"
-	} else {
-		buttonText = "Edit"
-		fileStat, _ := os.Stat(file)
-		lastModifiedTime = fileStat.ModTime().Format(time.UnixDate)
-	}
-
-	output := internal.Md2html(wikiContent)
-
-	c.HTML(http.StatusOK, "wiki.gohtml", gin.H{
-		"page":             page,
-		"title":            page,
-		"wikiContent":      template.HTML(output),
-		"buttonText":       buttonText,
-		"result":           internal.GetMessage(c.Query("m")),
-		"lastModifiedTime": lastModifiedTime,
-	})
 }
 
 func editWiki(c *gin.Context) {
@@ -295,7 +255,7 @@ func main() {
 	_ = internal.CreateDir(getPagesDir())
 	internal.PrepareGitRepo(getRepoDir(), getRepoURL())
 
-	if err := generateStaticSite("output"); err != nil {
+	if err := generateStaticSite(getOutputDir()); err != nil {
 		log.Printf("Error generating static site: %v", err)
 	}
 

@@ -4,6 +4,14 @@ import (
 	"os"
 )
 
+func getOutputDir() string {
+	dir := os.Getenv("OUTPUT_DIR")
+	if dir == "" {
+		return "output"
+	}
+	return dir
+}
+
 func getRepoDir() string {
 	return "data/repo/"
 }
