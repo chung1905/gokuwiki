@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/gin-contrib/static"
@@ -65,9 +64,6 @@ func saveWiki(c *gin.Context) {
 	}
 
 	page := requestJson.Page
-	if !strings.HasSuffix(page, ".md") {
-		page = page + ".md"
-	}
 	if page[0:1] != "/" {
 		page = "/" + page
 	}
@@ -97,6 +93,12 @@ func saveWiki(c *gin.Context) {
 
 	err := internal.SaveFile(wikiContentBytes, pageFilePath)
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"result": internal.GetMessage("save-error")})
+		return
+	}
+
+	// todo: only generate the changed page
+	if err := generateStaticSite(getOutputDir()); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"result": internal.GetMessage("save-error")})
 		return
 	}
