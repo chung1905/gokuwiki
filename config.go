@@ -4,12 +4,20 @@ import (
 	"os"
 )
 
+func getOutputDir() string {
+	dir := os.Getenv("OUTPUT_DIR")
+	if dir == "" {
+		return "output"
+	}
+	return dir
+}
+
 func getRepoDir() string {
 	return "data/repo/"
 }
 
 func getPageDirName() string {
-	return "pages"
+	return "pages/"
 }
 
 func getPagesDir() string {
