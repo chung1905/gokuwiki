@@ -113,7 +113,7 @@ func generateStaticSite(outputDir string) error {
 	}
 
 	// Copy static assets (CSS, JS, etc.)
-	if err := copyStaticAssets("web/pub", outputDir+"/pub"); err != nil {
+	if err := copyStaticAssets("web/pub", outputDir+"/"); err != nil {
 		return fmt.Errorf("failed to copy static assets: %w", err)
 	}
 
