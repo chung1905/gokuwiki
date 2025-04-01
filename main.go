@@ -252,17 +252,35 @@ func copyStaticAssets(srcDir, dstDir string) error {
 }
 
 func main() {
+	// Create necessary directories and prepare git repo
 	_ = internal.CreateDir(getPagesDir())
 	internal.PrepareGitRepo(getRepoDir(), getRepoURL())
 
-	if err := generateStaticSite(getOutputDir()); err != nil {
-		log.Printf("Error generating static site: %v", err)
+	// Default command is "serve-web" if no arguments provided
+	command := "serve-web"
+	if len(os.Args) > 1 {
+		command = os.Args[1]
 	}
 
-	router := getRouter()
-	err := router.Run()
-	if err != nil {
-		fmt.Println(err.Error())
+	// Generate static site regardless of the command
+	if err := generateStaticSite(getOutputDir()); err != nil {
+		log.Fatalf("Error generating static site: %v", err)
+	}
+
+	// If command is "generate", exit after generating static site
+	if command == "generate" {
+		fmt.Println("Static site generation complete")
 		return
+	} else if command == "serve-web" {
+		// Start the web server
+		router := getRouter()
+		err := router.Run()
+		if err != nil {
+			log.Fatalf("Error starting web server: %v", err)
+		}
+	} else {
+		fmt.Printf("Unknown command: %s\n", command)
+		fmt.Println("Available commands: generate, serve-web")
+		os.Exit(1)
 	}
 }
