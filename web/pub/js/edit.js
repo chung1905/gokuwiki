@@ -1,4 +1,3 @@
-
 function initializeEditor(editorQuery) {
     new EasyMDE({
         element: document.querySelector(editorQuery),
@@ -48,8 +47,16 @@ function initializeForm(formQuery, submitUrl) {
 
         const json = await response.json()
         addMessage(json.result.message)
-        if (window.turnstile) {
-            window.turnstile.reset()
+
+        // Redirect if save was successful
+        if (response.ok && json.result.is_success) {
+            setTimeout(function () {
+                window.location.href = "/wiki" + request.page + '.html'
+            }, 1000)
+        } else {
+            if (window.turnstile) {
+                window.turnstile.reset()
+            }
         }
     })
 }
