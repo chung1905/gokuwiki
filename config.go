@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 )
 
 func getOutputDir() string {
@@ -13,7 +14,7 @@ func getOutputDir() string {
 }
 
 func getSiteBaseURL() string {
-	return os.Getenv("GOKUWIKI_SITE_BASE_URL")
+	return strings.TrimRight(os.Getenv("GOKUWIKI_SITE_BASE_URL"), "/")
 }
 
 func getRepoDir() string {
