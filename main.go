@@ -114,7 +114,14 @@ func saveWiki(c *gin.Context) {
 		return
 	}
 
-	go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
+	if originalPage != page {
+		go internal.CommitFiles([]string{
+			getPageDirName() + page,
+			getPageDirName() + originalPage,
+		}, getRepoDir(), editComment, getGitAccessToken())
+	} else {
+		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
+	}
 
 	c.JSON(http.StatusOK, gin.H{"result": internal.GetMessage("wiki-saved")})
 }

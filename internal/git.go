@@ -22,7 +22,7 @@ func PrepareGitRepo(repoDir string, remoteUrl string, accessToken string) {
 	commitOldData(repo)
 }
 
-func CommitFile(filepath string, repoDir string, editComment string, accessToken string) {
+func CommitFiles(filepaths []string, repoDir string, editComment string, accessToken string) {
 	repo, err := git.PlainOpen(repoDir)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -35,13 +35,23 @@ func CommitFile(filepath string, repoDir string, editComment string, accessToken
 		return
 	}
 
-	_, err = worktree.Add(filepath)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+	for _, filepath := range filepaths {
+		_, err = worktree.Add(filepath)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
 	}
 
-	_, err = worktree.Commit(filepath+": "+editComment, getGitCommitOptions())
+	// Create commit message based on files
+	var commitMsg string
+	if len(filepaths) == 1 {
+		commitMsg = filepaths[0] + ": " + editComment
+	} else {
+		commitMsg = fmt.Sprintf("Modified %d files: %s", len(filepaths), editComment)
+	}
+
+	_, err = worktree.Commit(commitMsg, getGitCommitOptions())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -50,6 +60,10 @@ func CommitFile(filepath string, repoDir string, editComment string, accessToken
 	if len(accessToken) > 0 {
 		push(repo, accessToken)
 	}
+}
+
+func CommitFile(filepath string, repoDir string, editComment string, accessToken string) {
+	CommitFiles([]string{filepath}, repoDir, editComment, accessToken)
 }
 
 func push(repo *git.Repository, accessToken string) {
