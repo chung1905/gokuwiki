@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/static"
@@ -87,8 +88,8 @@ func saveWiki(c *gin.Context) {
 	wikiContent := requestJson.Content
 	wikiContentBytes := internal.NormalizeNewlines([]byte(wikiContent))
 
-	pageFilePath := getPagesDir() + page
-	originalPageFilePath := getPagesDir() + originalPage
+	pageFilePath := getPagesDir() + page + ".md"
+	originalPageFilePath := getPagesDir() + originalPage + ".md"
 
 	// Handle page move
 	if originalPage != page {
@@ -97,7 +98,7 @@ func saveWiki(c *gin.Context) {
 
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(pageFilePath)
-		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
+		go internal.CommitFile(pageFilePath, getRepoDir(), editComment, getGitAccessToken())
 		c.JSON(http.StatusOK, gin.H{"result": internal.GetMessage("wiki-removed")})
 		return
 	}
@@ -116,11 +117,11 @@ func saveWiki(c *gin.Context) {
 
 	if originalPage != page {
 		go internal.CommitFiles([]string{
-			getPageDirName() + page,
-			getPageDirName() + originalPage,
+			pageFilePath,
+			originalPageFilePath,
 		}, getRepoDir(), editComment, getGitAccessToken())
 	} else {
-		go internal.CommitFile(getPageDirName()+page, getRepoDir(), editComment, getGitAccessToken())
+		go internal.CommitFile(pageFilePath, getRepoDir(), editComment, getGitAccessToken())
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": internal.GetMessage("wiki-saved")})
@@ -169,10 +170,16 @@ func generateStaticIndexPage(pages []string, outputPath string) error {
 		return fmt.Errorf("failed to parse templates: %w", err)
 	}
 
+	// Remove .md suffix from page names
+	cleanedPages := make([]string, len(pages))
+	for i, page := range pages {
+		cleanedPages[i] = strings.TrimSuffix(page, ".md")
+	}
+
 	// Create data structure matching what homepage uses
 	data := gin.H{
 		"title":  "Wiki",
-		"pages":  pages,
+		"pages":  cleanedPages,
 		"result": internal.GetMessage(""),
 	}
 
@@ -224,7 +231,7 @@ func generateStaticWikiPage(page string, outputDir string) error {
 	}
 
 	// Create directory structure if needed
-	pageOutputPath := outputDir + page + ".html"
+	pageOutputPath := outputDir + strings.TrimSuffix(page, ".md") + ".html"
 	dir := filepath.Dir(pageOutputPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
