@@ -12,6 +12,10 @@ func getOutputDir() string {
 	return dir
 }
 
+func getSiteBaseURL() string {
+	return os.Getenv("GOKUWIKI_SITE_BASE_URL")
+}
+
 func getRepoDir() string {
 	return "data/repo/"
 }

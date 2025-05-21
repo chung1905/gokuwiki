@@ -158,6 +158,12 @@ func generateStaticSite(outputDir string) error {
 		}
 	}
 
+	// Generate sitemap.xml
+	siteBaseURL := getSiteBaseURL()
+	if err := internal.GenerateSitemap(getPagesDir(), pages, outputDir, siteBaseURL); err != nil {
+		return fmt.Errorf("failed to generate sitemap: %w", err)
+	}
+
 	fmt.Printf("Static site generated at: %s\n", outputDir)
 	return nil
 }
