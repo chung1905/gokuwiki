@@ -19,7 +19,7 @@
             <textarea id="content" name="content" style="min-height: 60vh">{{ .wikiContent }}</textarea>
         </div>
         <div>
-            <label for="comment">Comment</label>
+            <label for="comment" class="required">Comment</label>
             <input id="comment" name="comment">
         </div>
         {{ if .turnstileEnabled }}

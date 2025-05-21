@@ -25,3 +25,9 @@ div.main-content {
     border-radius: 1em;
     background-color: #fff;
 }
+
+label.required::after {
+    content: " *";
+    color: red;
+    font-weight: bold;
+}
