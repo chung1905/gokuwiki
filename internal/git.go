@@ -19,7 +19,7 @@ func PrepareGitRepo(repoDir string, remoteUrl string, accessToken string) {
 			pull(repo, accessToken)
 		}
 	}
-	commitOldData(repo)
+	commitOldData(repo, accessToken)
 }
 
 func CommitFiles(filepaths []string, repoDir string, editComment string, accessToken string) {
@@ -113,7 +113,7 @@ func getGitCommitOptions() *git.CommitOptions {
 	}
 }
 
-func commitOldData(repo *git.Repository) {
+func commitOldData(repo *git.Repository, accessToken string) {
 	worktree, err := repo.Worktree()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -132,6 +132,9 @@ func commitOldData(repo *git.Repository) {
 	}
 
 	_, _ = worktree.Commit("Commit unstaged files", getGitCommitOptions())
+	if len(accessToken) > 0 {
+		push(repo, accessToken)
+	}
 }
 
 func addRemote(repo *git.Repository, url string) {
