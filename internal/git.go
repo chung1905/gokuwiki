@@ -11,12 +11,15 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
-func PrepareGitRepo(repoDir string, remoteUrl string) {
+func PrepareGitRepo(repoDir string, remoteUrl string, accessToken string) {
 	repo := initRepoIfNotExist(repoDir)
-	commitOldData(repo)
 	if len(remoteUrl) > 0 {
 		addRemote(repo, remoteUrl)
+		if len(accessToken) > 0 {
+			pull(repo, accessToken)
+		}
 	}
+	commitOldData(repo)
 }
 
 func CommitFile(filepath string, repoDir string, editComment string, accessToken string) {
@@ -60,7 +63,21 @@ func push(repo *git.Repository, accessToken string) {
 		fmt.Println(err.Error())
 		return
 	}
+}
 
+func pull(repo *git.Repository, accessToken string) {
+	worktree, err := repo.Worktree()
+	if err == nil {
+		err = worktree.Pull(&git.PullOptions{
+			Auth: &http.BasicAuth{
+				Username: "gokuwiki",
+				Password: accessToken,
+			},
+		})
+		if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+			fmt.Println("Pull error:", err.Error())
+		}
+	}
 }
 
 func initRepoIfNotExist(repoDir string) *git.Repository {

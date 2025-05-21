@@ -266,7 +266,7 @@ func copyStaticAssets(srcDir, dstDir string) error {
 
 func main() {
 	_ = internal.CreateDir(getPagesDir())
-	internal.PrepareGitRepo(getRepoDir(), getRepoURL())
+	internal.PrepareGitRepo(getRepoDir(), getRepoURL(), getGitAccessToken())
 
 	if err := generateStaticSite(getOutputDir()); err != nil {
 		log.Printf("Error generating static site: %v", err)
