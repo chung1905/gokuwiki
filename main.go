@@ -43,10 +43,11 @@ func editWiki(c *gin.Context) {
 
 func saveWiki(c *gin.Context) {
 	var requestJson struct {
-		Page    string `json:"page"`
-		Content string `json:"content"`
-		Comment string `json:"comment"`
-		Captcha string `json:"captcha"`
+		OriginalPage string `json:"original-page"`
+		Page         string `json:"page"`
+		Content      string `json:"content"`
+		Comment      string `json:"comment"`
+		Captcha      string `json:"captcha"`
 	}
 
 	e := c.Bind(&requestJson)
@@ -67,6 +68,10 @@ func saveWiki(c *gin.Context) {
 	if page[0:1] != "/" {
 		page = "/" + page
 	}
+	originalPage := requestJson.OriginalPage
+	if originalPage[0:1] != "/" {
+		originalPage = "/" + originalPage
+	}
 
 	if page == "/" {
 		c.JSON(http.StatusBadRequest, gin.H{"result": internal.GetMessage("missing-path")})
@@ -83,6 +88,12 @@ func saveWiki(c *gin.Context) {
 	wikiContentBytes := internal.NormalizeNewlines([]byte(wikiContent))
 
 	pageFilePath := getPagesDir() + page
+	originalPageFilePath := getPagesDir() + originalPage
+
+	// Handle page move
+	if originalPage != page {
+		internal.DeleteFile(originalPageFilePath)
+	}
 
 	if len(wikiContentBytes) == 0 {
 		internal.DeleteFile(pageFilePath)

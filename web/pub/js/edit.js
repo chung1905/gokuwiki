@@ -24,6 +24,7 @@ function initializeForm(formQuery, submitUrl) {
 
     function _prepareRequest() {
         const ret = {
+            "original-page": form.querySelector('input[name="original-page"]').value,
             "page": form.querySelector('input[name="page"]').value,
             "content": form.querySelector('textarea[name="content"]').value,
             "comment": form.querySelector('input[name="comment"]').value,
