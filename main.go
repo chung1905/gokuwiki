@@ -29,7 +29,8 @@ func getRouter() *gin.Engine {
 
 func editWiki(c *gin.Context) {
 	page := c.Param("page")
-	file := getPagesDir() + page
+	pageFile := page + ".md"
+	file := getPagesDir() + pageFile
 	wikiContent, _ := internal.ReadFile(file)
 
 	c.Header("X-Robots-Tag", "noindex")
@@ -227,9 +228,10 @@ func generateStaticWikiPage(page string, outputDir string) error {
 	lastModifiedTime := fileStat.ModTime().Format(time.UnixDate)
 
 	// Create data structure matching what viewWiki uses
+	pageName := strings.TrimSuffix(page, ".md")
 	data := gin.H{
-		"page":             page,
-		"title":            page,
+		"page":             pageName,
+		"title":            pageName,
 		"wikiContent":      template.HTML(htmlContent),
 		"buttonText":       "Edit",
 		"result":           internal.GetMessage(""),
@@ -237,7 +239,7 @@ func generateStaticWikiPage(page string, outputDir string) error {
 	}
 
 	// Create directory structure if needed
-	pageOutputPath := outputDir + strings.TrimSuffix(page, ".md") + ".html"
+	pageOutputPath := outputDir + strings.TrimSuffix(pageName, ".md") + ".html"
 	dir := filepath.Dir(pageOutputPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
