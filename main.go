@@ -3,7 +3,6 @@ package main
 import (
 	"chungn/gokuwiki/internal"
 	"chungn/gokuwiki/internal/captcha"
-	"fmt"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -132,7 +131,7 @@ func main() {
 
 	router := getRouter()
 	if err := router.Run(); err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }

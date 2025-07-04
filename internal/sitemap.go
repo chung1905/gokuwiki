@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -61,6 +62,6 @@ func GenerateSitemap(pagesDir string, pages []string, outputDir string, siteBase
 		return fmt.Errorf("failed to write sitemap.xml: %w", err)
 	}
 
-	fmt.Println("Sitemap generated at:", outputDir+"/sitemap.xml")
+	log.Println("Sitemap generated at:", outputDir+"/sitemap.xml")
 	return nil
 }

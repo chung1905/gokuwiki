@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/go-git/go-git/v5"
@@ -116,7 +117,7 @@ func getGitCommitOptions() *git.CommitOptions {
 func commitOldData(repo *git.Repository, accessToken string) {
 	worktree, err := repo.Worktree()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -127,7 +128,7 @@ func commitOldData(repo *git.Repository, accessToken string) {
 
 	_, err = worktree.Add(".")
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -144,7 +145,7 @@ func addRemote(repo *git.Repository, url string) {
 	})
 
 	if errors.Is(err, git.ErrRemoteExists) {
-		fmt.Println("Remote \"origin\" already exists")
+		log.Println("Remote \"origin\" already exists")
 		return
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,12 +15,12 @@ import (
 func GenerateStaticSite(outputDir, pagesDir, siteBaseURL string) error {
 	// Create output directory
 	if err := CreateDir(outputDir); err != nil {
-		return fmt.Errorf("failed to create output directory: %w", err)
+		return logErrorf("failed to create output directory: %w", err)
 	}
 
 	// Copy static assets (CSS, JS, etc.)
 	if err := copyStaticAssets("web/pub", outputDir+"/"); err != nil {
-		return fmt.Errorf("failed to copy static assets: %w", err)
+		return logErrorf("failed to copy static assets: %w", err)
 	}
 
 	// Get all wiki pages
@@ -27,27 +28,27 @@ func GenerateStaticSite(outputDir, pagesDir, siteBaseURL string) error {
 
 	// Generate index page
 	if err := generateStaticIndexPage(pages, outputDir+"/index.html"); err != nil {
-		return fmt.Errorf("failed to generate index: %w", err)
+		return logErrorf("failed to generate index: %w", err)
 	}
 
 	// Generate each wiki page
 	wikiDir := outputDir + "/wiki/"
 	if err := CreateDir(wikiDir); err != nil {
-		return fmt.Errorf("failed to create wiki directory: %w", err)
+		return logErrorf("failed to create wiki directory: %w", err)
 	}
 
 	for _, page := range pages {
 		if err := generateStaticWikiPage(page, wikiDir, pagesDir); err != nil {
-			return fmt.Errorf("failed to generate page %s: %w", page, err)
+			return logErrorf("failed to generate page %s: %w", page, err)
 		}
 	}
 
 	// Generate sitemap.xml
 	if err := GenerateSitemap(pagesDir, pages, outputDir, siteBaseURL); err != nil {
-		return fmt.Errorf("failed to generate sitemap: %w", err)
+		return logErrorf("failed to generate sitemap: %w", err)
 	}
 
-	fmt.Printf("Static site generated at: %s\n", outputDir)
+	log.Printf("Static site generated at: %s", outputDir)
 	return nil
 }
 
@@ -82,7 +83,7 @@ func generateStaticIndexPage(pages []string, outputPath string) error {
 	templatesGlob := "web/templates/*/*.gohtml"
 	tmpl, err := template.ParseGlob(templatesGlob)
 	if err != nil {
-		return fmt.Errorf("failed to parse templates: %w", err)
+		return logErrorf("failed to parse templates: %w", err)
 	}
 
 	// Remove .md suffix from page names
@@ -101,15 +102,15 @@ func generateStaticIndexPage(pages []string, outputPath string) error {
 	// Render the template to a buffer
 	var buf bytes.Buffer
 	if err := tmpl.ExecuteTemplate(&buf, "list.gohtml", data); err != nil {
-		return fmt.Errorf("failed to execute template: %w", err)
+		return logErrorf("failed to execute template: %w", err)
 	}
 
 	// Write the content directly as it already includes full HTML structure
 	if err := os.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write index file: %w", err)
+		return logErrorf("failed to write index file: %w", err)
 	}
 
-	fmt.Printf("Index file written to: %s\n", outputPath)
+	log.Printf("Index file written to: %s", outputPath)
 	return nil
 }
 
@@ -118,14 +119,14 @@ func generateStaticWikiPage(page, outputDir, pagesDir string) error {
 	templatesGlob := "web/templates/*/*.gohtml"
 	tmpl, err := template.ParseGlob(templatesGlob)
 	if err != nil {
-		return fmt.Errorf("failed to parse templates: %w", err)
+		return logErrorf("failed to parse templates: %w", err)
 	}
 
 	// Read page content
 	file := pagesDir + page
 	content, err := ReadFile(file)
 	if err != nil {
-		return fmt.Errorf("failed to read page content: %w", err)
+		return logErrorf("failed to read page content: %w", err)
 	}
 
 	// Convert markdown to HTML
@@ -156,14 +157,19 @@ func generateStaticWikiPage(page, outputDir, pagesDir string) error {
 	// Render the template to a buffer
 	var buf bytes.Buffer
 	if err := tmpl.ExecuteTemplate(&buf, "wiki.gohtml", data); err != nil {
-		return fmt.Errorf("failed to execute template: %w", err)
+		return logErrorf("failed to execute template: %w", err)
 	}
 
 	// Write the content directly
 	if err := os.WriteFile(pageOutputPath, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write wiki page file: %w", err)
+		return logErrorf("failed to write wiki page file: %w", err)
 	}
 
-	fmt.Printf("Wiki page written to: %s\n", pageOutputPath)
+	log.Printf("Wiki page written to: %s", pageOutputPath)
 	return nil
+}
+
+func logErrorf(format string, args ...interface{}) error {
+	log.Printf(format, args...)
+	return fmt.Errorf(format, args...)
 }

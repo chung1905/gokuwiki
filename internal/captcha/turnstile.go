@@ -2,8 +2,8 @@ package captcha
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -22,25 +22,25 @@ func Validate(token string, secretKey string) bool {
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return false
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return false
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return false
 	}
 
-	fmt.Println(string(body))
+	log.Println(string(body))
 	turnstileRes := turnstileResponse{}
 	err = json.Unmarshal(body, &turnstileRes)
 	if err != nil {

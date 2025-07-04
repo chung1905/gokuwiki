@@ -2,8 +2,8 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -12,7 +12,7 @@ import (
 func CreateDir(dir string) error {
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 	return nil
@@ -21,7 +21,7 @@ func CreateDir(dir string) error {
 func DeleteFile(filepath string) {
 	err := os.Remove(filepath)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }
@@ -49,7 +49,7 @@ func ListFiles(dir string) []string {
 	})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return nil
 	}
 
@@ -60,19 +60,19 @@ func SaveFile(content []byte, filepath string) error {
 	_ = CreateDir(path.Dir(filepath))
 	file, err := os.Create(filepath)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 
 	_, err = file.Write(content)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 
 	err = file.Sync()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 
