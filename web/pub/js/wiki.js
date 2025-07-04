@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
         const codeBlocks = document.querySelectorAll('pre code');
 
         codeBlocks.forEach(function (codeBlock) {
-            const container = codeBlock.parentNode.tagName === 'pre' ?
+            const container = codeBlock.parentNode.tagName === 'PRE' ?
                 codeBlock.parentNode :
                 codeBlock;
 
