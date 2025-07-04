@@ -32,7 +32,13 @@ func Validate(token string, secretKey string) bool {
 		log.Println(err)
 		return false
 	}
-	defer res.Body.Close()
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(res.Body)
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
