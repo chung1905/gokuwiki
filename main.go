@@ -239,7 +239,7 @@ func generateStaticWikiPage(page string, outputDir string) error {
 	}
 
 	// Create directory structure if needed
-	pageOutputPath := outputDir + strings.TrimSuffix(pageName, ".md") + ".html"
+	pageOutputPath := outputDir + pageName + ".html"
 	dir := filepath.Dir(pageOutputPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
